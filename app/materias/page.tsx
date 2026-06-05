@@ -1,6 +1,5 @@
 "use client";
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 import {
@@ -15,19 +14,35 @@ import {
 
 export default function MateriasPage() {
   const [materia, setMateria] = useState("");
- const [materias, setMaterias] = useState<
-  { nome: string; questoes: number }[]
->([]);
+    const [materias, setMaterias] = useState<
+      {
+        nome: string;
+        acertos: number;
+        erros: number;
+      }[]
+    >([]);
+    useEffect(() => {
+  const dadosSalvos = localStorage.getItem("materias");
+
+  if (dadosSalvos) {
+    setMaterias(JSON.parse(dadosSalvos));
+  }
+}, []);
+
+useEffect(() => {
+  localStorage.setItem("materias", JSON.stringify(materias));
+}, [materias]);
 
   const adicionarMateria = () => {
     if (!materia.trim()) return;
 
    setMaterias([
   ...materias,
-  {
-    nome: materia,
-    questoes: 0,
-    
+ {
+  nome: materia,
+  acertos: 0,
+  erros: 0,
+
   },
 ]);
 setMateria("");
@@ -36,13 +51,17 @@ setMateria("");
   const novaLista = materias.filter((_, index) => index !== indexParaRemover);
   setMaterias(novaLista);
 };
-const adicionarQuestao = (index: number) => {
-  const novaLista = [...materias];
+  const adicionarAcerto = (index: number) => {
+    const novaLista = [...materias];
+    novaLista[index].acertos += 1;
+    setMaterias(novaLista);
+  };
 
-  novaLista[index].questoes += 1;
-
-  setMaterias(novaLista);
-};
+  const adicionarErro = (index: number) => {
+    const novaLista = [...materias];
+    novaLista[index].erros += 1;
+    setMaterias(novaLista);
+  };
 
   return (
     <Box sx={{ minHeight: "100vh", background: "#f8fafc", py: 5 }}>
@@ -113,16 +132,46 @@ const adicionarQuestao = (index: number) => {
                           <Box>
                               <Typography sx={{ fontWeight: 600 }}>📚 {item.nome}</Typography>
                               <Typography variant="body2" sx={{ color: "#64748b" }}>
-                                Questões: {item.questoes}
+                                Total: {item.acertos + item.erros}
                               </Typography>
+
+                              <Typography variant="body2" sx={{ color: "#16a34a" }}>
+                                Acertos: {item.acertos}
+                              </Typography>
+
+                                    <Typography variant="body2" sx={{ color: "#dc2626" }}>
+                                      Erros: {item.erros}
+                                    </Typography>
+
+                                    <Typography variant="body2" sx={{ color: "#2563eb" }}>
+                                      Aproveitamento: {
+                                        item.acertos + item.erros === 0
+                                          ? 0
+                                          : Math.round(
+                                              (item.acertos /
+                                                (item.acertos + item.erros)) *
+                                                100
+                                            )
+                                      }%
+                                    </Typography>
                             </Box>
                             <Box sx={{ display: "flex", gap: 1 }}>
                                 <Button
-                                  variant="outlined"
+                                  variant="contained"
+                                  color="success"
                                   size="small"
-                                  onClick={() => adicionarQuestao(index)}
+                                  onClick={() => adicionarAcerto(index)}
                                 >
-                                  +1 Questão
+                                  + Acerto
+                                </Button>
+
+                                <Button
+                                  variant="contained"
+                                  color="error"
+                                  size="small"
+                                  onClick={() => adicionarErro(index)}
+                                >
+                                  + Erro
                                 </Button>
                           <Button color="error" onClick={() => removerMateria(index)}>
                             <DeleteIcon />
