@@ -9,6 +9,7 @@ import {
   Button,
 } from "@mui/material";
 
+import Link from "next/link";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import FlagIcon from "@mui/icons-material/Flag";
@@ -56,9 +57,20 @@ export default function Home() {
             Organize seus estudos, acompanhe questões e evolua com metas.
           </Typography>
 
-          <Button variant="contained" sx={{ mt: 3 }}>
-            Começar agora
-          </Button>
+          <Button
+              component={Link}
+              href="/materias"
+              variant="contained"
+              sx={{
+                mt: 3,
+                borderRadius: 3,
+                px: 4,
+                py: 1.5,
+                fontWeight: 600,
+              }}
+            >
+              Começar agora
+            </Button>
         </Box>
 
        <Box sx={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 3 }}>
