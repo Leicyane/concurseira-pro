@@ -1,10 +1,11 @@
 "use client";
+
+import { useEffect, useState } from "react";
 import {
   Box,
   Card,
   CardContent,
   Container,
-  Grid,
   Typography,
   Button,
 } from "@mui/material";
@@ -38,6 +39,46 @@ export default function Home() {
       icone: <BarChartIcon fontSize="large" />,
     },
   ];
+  const [resumo, setResumo] = useState({
+  materias: 0,
+  questoes: 0,
+  acertos: 0,
+  aproveitamento: 0,
+});
+
+useEffect(() => {
+  const dados = localStorage.getItem("materias");
+
+  if (!dados) return;
+
+  const materias = JSON.parse(dados);
+
+  const totalMaterias = materias.length;
+
+  const totalAcertos = materias.reduce(
+    (acc: number, item: any) => acc + item.acertos,
+    0
+  );
+
+  const totalErros = materias.reduce(
+    (acc: number, item: any) => acc + item.erros,
+    0
+  );
+
+  const totalQuestoes = totalAcertos + totalErros;
+
+  const aproveitamento =
+    totalQuestoes === 0
+      ? 0
+      : Math.round((totalAcertos / totalQuestoes) * 100);
+
+  setResumo({
+    materias: totalMaterias,
+    questoes: totalQuestoes,
+    acertos: totalAcertos,
+    aproveitamento,
+  });
+}, []);
 
   return (
     <Box sx={{ minHeight: "100vh", background: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)", py: 6 }}>
@@ -71,6 +112,62 @@ export default function Home() {
             >
               Começar agora
             </Button>
+            <Box
+              sx={{
+                mt: 6,
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                gap: 3,
+              }}
+            >
+              <Card>
+                <CardContent>
+                  <Typography variant="h6">
+                    📚 Matérias
+                  </Typography>
+
+                  <Typography variant="h4">
+                    {resumo.materias}
+                  </Typography>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent>
+                  <Typography variant="h6">
+                    📝 Questões
+                  </Typography>
+
+                  <Typography variant="h4">
+                    {resumo.questoes}
+                  </Typography>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent>
+                  <Typography variant="h6">
+                    ✅ Acertos
+                  </Typography>
+
+                  <Typography variant="h4">
+                    {resumo.acertos}
+                  </Typography>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent>
+                  <Typography variant="h6">
+                    🎯 Aproveitamento
+                  </Typography>
+
+                  <Typography variant="h4">
+                    {resumo.aproveitamento}%
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Box>
         </Box>
 
        <Box sx={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 3 }}>
