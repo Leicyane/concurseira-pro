@@ -15,16 +15,32 @@ import {
 
 export default function MateriasPage() {
   const [materia, setMateria] = useState("");
-  const [materias, setMaterias] = useState<string[]>([]);
+ const [materias, setMaterias] = useState<
+  { nome: string; questoes: number }[]
+>([]);
 
   const adicionarMateria = () => {
     if (!materia.trim()) return;
 
-    setMaterias([...materias, materia]);
-    setMateria("");
-  };
+   setMaterias([
+  ...materias,
+  {
+    nome: materia,
+    questoes: 0,
+    
+  },
+]);
+setMateria("");
+};
   const removerMateria = (indexParaRemover: number) => {
   const novaLista = materias.filter((_, index) => index !== indexParaRemover);
+  setMaterias(novaLista);
+};
+const adicionarQuestao = (index: number) => {
+  const novaLista = [...materias];
+
+  novaLista[index].questoes += 1;
+
   setMaterias(novaLista);
 };
 
@@ -94,11 +110,24 @@ export default function MateriasPage() {
                             justifyContent: "space-between",
                           }}
                         >
-                          <Typography sx={{ fontWeight: 600 }}>{item}</Typography>
-
+                          <Box>
+                              <Typography sx={{ fontWeight: 600 }}>📚 {item.nome}</Typography>
+                              <Typography variant="body2" sx={{ color: "#64748b" }}>
+                                Questões: {item.questoes}
+                              </Typography>
+                            </Box>
+                            <Box sx={{ display: "flex", gap: 1 }}>
+                                <Button
+                                  variant="outlined"
+                                  size="small"
+                                  onClick={() => adicionarQuestao(index)}
+                                >
+                                  +1 Questão
+                                </Button>
                           <Button color="error" onClick={() => removerMateria(index)}>
                             <DeleteIcon />
                           </Button>
+                          </Box>
                         </CardContent>
                     </Card>
                   ))}
